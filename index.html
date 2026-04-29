@@ -25,7 +25,7 @@ const firebaseConfig = {
 };
 
         // ❗ ВСТАВЬТЕ ВАШ API-КЛЮЧ GEMINI
-        const GEMINI_API_KEY = AIzaSyBZKUkDwaZq8bcRS2X9UqN5OHBJzQSa6CM";
+        const GEMINI_API_KEY = "sk-f187d67bf21443d5996b49db4bd3d3a8";
 
         // Инициализация Firebase
         const app = initializeApp(firebaseConfig);
@@ -242,21 +242,31 @@ const firebaseConfig = {
         }
 
         async function callGeminiAPI(messages) {
-            // Преобразуем историю в формат Gemini (берем последние 20 сообщений для контекста)
-            const history = messages.slice(-20).map(m => ({
-                role: m.role === 'user' ? 'user' : 'model',
-                parts: [{ text: m.text }]
-            }));
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: history })
-            });
-            const data = await response.json();
-            if (data.error) throw new Error(data.error.message);
-            return data.candidates[0].content.parts[0].text;
-        }
+    // Подготовка сообщений для DeepSeek
+    const deepseekMessages = messages.slice(-20).map(m => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.text
+    }));
+
+    const url = "https://api.deepseek.com/v1/chat/completions";
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${GEMINI_API_KEY}`
+        },
+        body: JSON.stringify({
+            model: "deepseek-chat",
+            messages: deepseekMessages,
+            temperature: 0.7,
+            max_tokens: 2000
+        })
+    });
+    
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.choices[0].message.content;
+}
 
         async function saveMessagesToFirestore() {
             const userRef = doc(db, "users", currentUserId);
