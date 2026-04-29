@@ -9,4 +9,4 @@ Sign in with Google — and start asking questions immediately. No setup, no del
 
 🔐 **Google Auth** • ☁️ **Firestore** • 🧠 **Gemini 1.5 Flash** • 🎨 **Pure HTML/CSS**
 
-👉 [Try Qesty AI](https://your-username.github.io/your-repo)
+👉 [Try Qesty AI]( https://atanelo384-web.github.io/Qesty-AI/)
